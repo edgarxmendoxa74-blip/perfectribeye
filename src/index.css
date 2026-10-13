@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The Perfect Ribeye PH - Premium Steak Theme */
+
+/* Ribeye color palette helpers */
+.bg-ribeye-dark { background-color: #0f0f0f; }
+.bg-ribeye-charcoal { background-color: #1a1a1a; }
+.bg-ribeye-card { background-color: #242424; }
+.text-ribeye-gold { color: #d4a853; }
+.text-ribeye-cream { color: #f5f0e8; }
+.border-ribeye-accent { border-color: #8b2635; }
+
+/* Base font + dark background */
+html, body, #root { 
+  height: 100%; 
+}
+
+body { 
+  @apply bg-gray-950 text-gray-100;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(180deg, #0a0a0a 0%, #121212 50%, #0a0a0a 100%);
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8b2635;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a62f42;
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+  touch-action: pan-x; /* Enable horizontal pan/swipe on touch devices */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}
+
+/* Image loading optimization */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Premium card hover effect */
+.ribeye-card {
+  background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+  border: 1px solid rgba(139, 38, 53, 0.2);
+  transition: all 0.3s ease;
+}
+
+.ribeye-card:hover {
+  border-color: rgba(139, 38, 53, 0.5);
+  box-shadow: 0 8px 32px rgba(139, 38, 53, 0.2);
+  transform: translateY(-4px);
+}
+
+/* Gold accent text */
+.gold-accent {
+  background: linear-gradient(135deg, #d4a853 0%, #f5d69d 50%, #d4a853 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Steak button styling */
+.ribeye-btn {
+  background: linear-gradient(135deg, #8b2635 0%, #a62f42 100%);
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.ribeye-btn:hover {
+  background: linear-gradient(135deg, #a62f42 0%, #c43850 100%);
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(139, 38, 53, 0.4);
+}
+
+/* Preload critical images */
+.preload-image {
+  content: '';
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+}
+
+/* Marquee Animation for Announcement Bar */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Smooth scroll behavior with scroll-snap */
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
+/* Individual landing sections - full screen height with snap */
+.landing-section {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+/* Smooth transitions for all elements */
+* {
+  scroll-behavior: smooth;
+}
