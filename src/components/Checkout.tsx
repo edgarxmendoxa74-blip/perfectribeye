@@ -3,6 +3,9 @@ import { ArrowLeft, Send, MapPin, Phone, User, CreditCard, FileText, Calendar, C
 import { CartItem, PaymentMethod } from '../types';
 import { usePaymentMethods } from '../hooks/usePaymentMethods';
 
+const FB_PAGE_ID = '61561326563904';
+const MESSENGER_URL = `https://m.me/${FB_PAGE_ID}`;
+
 interface CheckoutProps {
   cartItems: CartItem[];
   totalPrice: number;
@@ -152,7 +155,7 @@ Thank you for choosing The Perfect Ribeye PH! 🥩🔥
     setCopied(true);
     setShowModal(true);
 
-    const messengerUrl = 'https://m.me/360416760484907';
+    const messengerUrl = MESSENGER_URL;
     window.open(messengerUrl, '_blank');
   };
 
@@ -613,7 +616,7 @@ Thank you for choosing The Perfect Ribeye PH! 🥩🔥
             {/* Actions */}
             <div className="space-y-2 pt-2 border-t border-gray-800">
               <a
-                href="https://m.me/360416760484907"
+                href={MESSENGER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl flex items-center justify-center space-x-2 shadow-lg shadow-red-600/30 transition-all hover:scale-[1.01]"
