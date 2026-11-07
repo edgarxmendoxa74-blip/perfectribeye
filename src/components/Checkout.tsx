@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Send, MapPin, Phone, User, CreditCard, FileText, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Send, MapPin, Phone, User, CreditCard, FileText, Calendar, Clock, Copy, Check, ExternalLink, X, CheckCircle2, MessageSquare } from 'lucide-react';
 import { CartItem, PaymentMethod } from '../types';
 import { usePaymentMethods } from '../hooks/usePaymentMethods';
 
@@ -18,6 +18,9 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [deliveryTime, setDeliveryTime] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gcash');
   const [notes, setNotes] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [generatedOrder, setGeneratedOrder] = useState('');
 
   // Get minimum date (tomorrow)
   const getMinDate = () => {
@@ -78,12 +81,12 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
     return slot ? slot.label : value;
   };
 
-  const handleSendOrder = () => {
+  const generateOrderMessage = () => {
     const deliveryInfo = deliveryDate || deliveryTime 
       ? `\n📅 𝗣𝗿𝗲𝗳𝗲𝗿𝗿𝗲𝗱 𝗗𝗲𝗹𝗶𝘃𝗲𝗿𝘆:\n${deliveryDate ? `Date: ${formatDeliveryDate(deliveryDate)}` : ''}${deliveryDate && deliveryTime ? '\n' : ''}${deliveryTime ? `Time: ${getTimeSlotLabel(deliveryTime)}` : ''}\n`
       : '';
 
-    const orderMessage = `
+    return `
 🥩 THE PERFECT RIBEYE PH - ORDER FORM 🥩
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -91,7 +94,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
 📋 𝗢𝗥𝗗𝗘𝗥:
 ${getOrderText()}
 
-💰 TOTAL: ₱${totalPrice}
+💰 TOTAL: ₱${totalPrice.toLocaleString()}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -112,11 +115,53 @@ ${notes ? `📝 𝗡𝗼𝘁𝗲𝘀: ${notes}` : ''}
 
 Thank you for choosing The Perfect Ribeye PH! 🥩🔥
     `.trim();
+  };
 
-    const encodedMessage = encodeURIComponent(orderMessage);
-    const messengerUrl = `https://m.me/360416760484907?text=${encodedMessage}`;
-    
+  const copyToClipboard = async (text: string): Promise<boolean> => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (err) {
+      console.warn('Clipboard API error, trying fallback', err);
+    }
+
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const success = document.execCommand('copy');
+      textArea.remove();
+      return success;
+    } catch (err) {
+      console.error('Fallback clipboard copy failed', err);
+      return false;
+    }
+  };
+
+  const handleSendOrder = async () => {
+    const orderMessage = generateOrderMessage();
+    setGeneratedOrder(orderMessage);
+    await copyToClipboard(orderMessage);
+    setCopied(true);
+    setShowModal(true);
+
+    const messengerUrl = 'https://m.me/360416760484907';
     window.open(messengerUrl, '_blank');
+  };
+
+  const handleManualCopy = async () => {
+    if (generatedOrder) {
+      await copyToClipboard(generatedOrder);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
   };
 
   const isFormValid = customerName && contactNumber && address && paymentMethod;
@@ -485,13 +530,109 @@ Thank you for choosing The Perfect Ribeye PH! 🥩🔥
                 </button>
 
                 <p className="text-xs text-gray-500 text-center">
-                  You'll be redirected to Facebook Messenger to confirm your order 🥩
+                  Awtomatikong kokopyahin ang iyong order details sa clipboard at bubuksan ang Messenger 🥩
                 </p>
               </form>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Messenger Order Instructions Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 border border-red-600/40 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative max-h-[92vh] flex flex-col text-left">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-800/80 transition-colors"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Modal Header */}
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 className="w-7 h-7 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">Nai-copy na ang iyong Order! 📋</h3>
+                <p className="text-xs sm:text-sm text-emerald-400 font-medium">Ready to paste into Facebook Messenger</p>
+              </div>
+            </div>
+
+            {/* Explanation / Guidance */}
+            <div className="bg-red-950/40 border border-red-800/30 rounded-xl p-3.5 mb-4 text-xs sm:text-sm text-gray-300 leading-relaxed">
+              <span className="font-semibold text-red-400">💡 Paalala:</span> Dahil sa security policy ng Facebook, hindi awtomatikong lumalabas ang text sa chat box. <strong className="text-white">Awtomatikong kinopya na namin ang order details sa iyong clipboard</strong>!
+            </div>
+
+            {/* 3 Simple Steps */}
+            <div className="space-y-2 mb-4 text-xs sm:text-sm">
+              <div className="flex items-start space-x-2.5 bg-gray-800/50 p-2.5 rounded-lg border border-gray-700/50">
+                <span className="w-5 h-5 rounded-full bg-red-600/30 text-red-400 text-xs flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
+                <span className="text-gray-300">Nai-copy na sa iyong clipboard ang kumpletong order summary.</span>
+              </div>
+              <div className="flex items-start space-x-2.5 bg-gray-800/50 p-2.5 rounded-lg border border-gray-700/50">
+                <span className="w-5 h-5 rounded-full bg-red-600/30 text-red-400 text-xs flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
+                <span className="text-gray-300">Pumunta sa Messenger chat at mag-<strong>Paste</strong> (<kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-xs text-white">Ctrl + V</kbd> o Long Press ➔ Paste).</span>
+              </div>
+              <div className="flex items-start space-x-2.5 bg-gray-800/50 p-2.5 rounded-lg border border-gray-700/50">
+                <span className="w-5 h-5 rounded-full bg-red-600/30 text-red-400 text-xs flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
+                <span className="text-gray-300">Pindutin ang <strong>Send</strong> at i-attach ang payment screenshot receipt.</span>
+              </div>
+            </div>
+
+            {/* Order Text Preview Box */}
+            <div className="relative mb-5 flex-1 min-h-0 flex flex-col">
+              <div className="flex items-center justify-between mb-1.5 text-xs text-gray-400">
+                <span>Preview ng iyong Order:</span>
+                <button
+                  type="button"
+                  onClick={handleManualCopy}
+                  className="flex items-center space-x-1 text-xs text-red-400 hover:text-red-300 font-semibold px-2 py-1 rounded bg-red-950/60 border border-red-800/40 hover:border-red-600/60 transition-colors"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-400">✓ Nakopya!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Kopyahin Ulit</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <pre className="w-full max-h-36 overflow-y-auto p-3 bg-gray-950 border border-gray-800 rounded-xl text-xs text-gray-300 font-mono whitespace-pre-wrap selection:bg-red-600/40">
+                {generatedOrder}
+              </pre>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-2 pt-2 border-t border-gray-800">
+              <a
+                href="https://m.me/360416760484907"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-xl flex items-center justify-center space-x-2 shadow-lg shadow-red-600/30 transition-all hover:scale-[1.01]"
+              >
+                <MessageSquare className="w-5 h-5" />
+                <span>Buksan ang Facebook Messenger</span>
+                <ExternalLink className="w-4 h-4 ml-1" />
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="w-full py-2.5 px-4 bg-gray-800/70 hover:bg-gray-800 text-gray-300 hover:text-white rounded-xl text-sm font-medium transition-colors"
+              >
+                Isara (Tapos na akong mag-order)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
