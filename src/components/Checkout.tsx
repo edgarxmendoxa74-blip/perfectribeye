@@ -23,6 +23,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [notes, setNotes] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [directCopied, setDirectCopied] = useState(false);
   const [generatedOrder, setGeneratedOrder] = useState('');
 
   // Get minimum date (tomorrow)
@@ -167,6 +168,16 @@ Thank you for choosing The Perfect Ribeye PH! 🥩🔥
     }
   };
 
+  const handleDirectCopy = async () => {
+    const orderMessage = generateOrderMessage();
+    setGeneratedOrder(orderMessage);
+    const success = await copyToClipboard(orderMessage);
+    if (success) {
+      setDirectCopied(true);
+      setTimeout(() => setDirectCopied(false), 3000);
+    }
+  };
+
   const isFormValid = customerName && contactNumber && address && paymentMethod;
 
   return (
@@ -261,6 +272,29 @@ Thank you for choosing The Perfect Ribeye PH! 🥩🔥
                     <span className="text-lg font-bold text-white">Total</span>
                     <span className="text-2xl font-bold text-red-400">₱{totalPrice.toLocaleString()}</span>
                   </div>
+
+                  {/* Quick Copy Button */}
+                  <button
+                    type="button"
+                    onClick={handleDirectCopy}
+                    className={`w-full mt-2 py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 transition-all border shadow-sm ${
+                      directCopied
+                        ? 'bg-emerald-950/70 border-emerald-500/60 text-emerald-300'
+                        : 'bg-gray-800/80 hover:bg-gray-700/80 border-gray-700 hover:border-red-600/50 text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    {directCopied ? (
+                      <>
+                        <Check className="w-4 h-4 text-emerald-400" />
+                        <span className="text-emerald-400 font-bold">✓ Order Details Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 text-gray-400" />
+                        <span>Copy Order Details</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -514,23 +548,49 @@ Thank you for choosing The Perfect Ribeye PH! 🥩🔥
                   </div>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  type="button"
-                  onClick={handleSendOrder}
-                  disabled={!isFormValid}
-                  className={`w-full relative overflow-hidden py-4 rounded-xl font-bold text-lg transition-all duration-500 transform flex items-center justify-center space-x-3 group ${
-                    isFormValid
-                      ? 'bg-gradient-to-r from-red-600 via-red-500 to-red-600 text-white hover:shadow-2xl hover:shadow-red-600/30 hover:scale-[1.02] border border-red-400/20'
-                      : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
-                  }`}
-                >
-                  {isFormValid && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  )}
-                  <Send className="w-5 h-5 relative z-10" />
-                  <span className="relative z-10">Send Order via Messenger</span>
-                </button>
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-2">
+                  {/* Copy Order Details Button */}
+                  <button
+                    type="button"
+                    onClick={handleDirectCopy}
+                    className={`w-full py-3.5 px-4 rounded-xl font-bold text-base transition-all duration-300 flex items-center justify-center space-x-2 border shadow-lg ${
+                      directCopied
+                        ? 'bg-emerald-950/80 border-emerald-500/80 text-emerald-300'
+                        : 'bg-gray-800/90 hover:bg-gray-700/90 border-gray-600/70 hover:border-red-500/70 text-gray-200 hover:text-white'
+                    }`}
+                  >
+                    {directCopied ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        <span className="text-emerald-400 font-bold">✓ Order Details Copied to Clipboard!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-5 h-5 text-gray-400 group-hover:text-red-400" />
+                        <span>Copy Order Details</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Send Order via Messenger Button */}
+                  <button
+                    type="button"
+                    onClick={handleSendOrder}
+                    disabled={!isFormValid}
+                    className={`w-full relative overflow-hidden py-4 rounded-xl font-bold text-lg transition-all duration-500 transform flex items-center justify-center space-x-3 group ${
+                      isFormValid
+                        ? 'bg-gradient-to-r from-red-600 via-red-500 to-red-600 text-white hover:shadow-2xl hover:shadow-red-600/30 hover:scale-[1.02] border border-red-400/20'
+                        : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
+                    }`}
+                  >
+                    {isFormValid && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    )}
+                    <Send className="w-5 h-5 relative z-10" />
+                    <span className="relative z-10">Send Order via Messenger</span>
+                  </button>
+                </div>
 
                 <p className="text-xs text-gray-500 text-center">
                   Awtomatikong kokopyahin ang iyong order details sa clipboard at bubuksan ang Messenger 🥩
