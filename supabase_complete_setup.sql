@@ -295,3 +295,16 @@ SELECT id, 'Truffle Butter', 120.00, 'Butter' FROM menu_items WHERE name = 'AUS 
 INSERT INTO add_ons (menu_item_id, name, price, category)
 SELECT id, 'Red Wine Demi-Glace Sauce', 95.00, 'Sauces' FROM menu_items WHERE name = 'AUS Marbled Ribeye' AND category = 'australian-ribeye' LIMIT 1;
 
+-- ==============================================================================
+-- 9. GRANT PERMISSIONS TO ANON AND AUTHENTICATED ROLES (Fixes 401 / 42501 permission denied)
+-- ==============================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated;
+
+
