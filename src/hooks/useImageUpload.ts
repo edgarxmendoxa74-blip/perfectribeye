@@ -1,11 +1,66 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'yuph013q';
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ribeye';
+
 export const useImageUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const uploadImage = async (file: File): Promise<string> => {
+  const uploadToCloudinary = (file: File, folder?: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+      xhr.open('POST', url);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(percent);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            // Automatically insert f_auto,q_auto for best performance and format conversion (WebP/AVIF)
+            let optimizedUrl = response.secure_url || response.url;
+            if (optimizedUrl && optimizedUrl.includes('/upload/')) {
+              optimizedUrl = optimizedUrl.replace('/upload/', '/upload/f_auto,q_auto/');
+            }
+            resolve(optimizedUrl);
+          } catch {
+            reject(new Error('Failed to parse Cloudinary response'));
+          }
+        } else {
+          try {
+            const errorResponse = JSON.parse(xhr.responseText);
+            reject(new Error(errorResponse.error?.message || 'Cloudinary upload failed'));
+          } catch {
+            reject(new Error(`Upload failed with status ${xhr.status}`));
+          }
+        }
+      };
+
+      xhr.onerror = () => {
+        reject(new Error('Network error during upload to Cloudinary. Check your internet connection.'));
+      };
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      if (folder) {
+        formData.append('folder', folder);
+      }
+
+      xhr.send(formData);
+    });
+  };
+
+  const uploadImage = async (file: File, folder?: string): Promise<string> => {
     try {
       setUploading(true);
       setUploadProgress(0);
@@ -16,28 +71,23 @@ export const useImageUpload = () => {
         throw new Error('Please upload a valid image file (JPEG, PNG, WebP, or GIF)');
       }
 
-      // Validate file size (5MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      // Validate file size (up to 10MB on Cloudinary)
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        throw new Error('Image size must be less than 5MB');
+        throw new Error('Image size must be less than 10MB');
       }
 
-      // Generate unique filename
+      // Use Cloudinary if configured (zero Supabase egress!)
+      if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
+        const url = await uploadToCloudinary(file, folder || 'perfectribeye');
+        setUploadProgress(100);
+        return url;
+      }
+
+      // Fallback to Supabase Storage if Cloudinary credentials are not present
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
-
-      // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from('menu-images')
         .upload(fileName, file, {
@@ -46,18 +96,15 @@ export const useImageUpload = () => {
           contentType: file.type
         });
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
       if (error) {
         throw error;
       }
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('menu-images')
         .getPublicUrl(data.path);
 
+      setUploadProgress(100);
       return publicUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -70,20 +117,18 @@ export const useImageUpload = () => {
 
   const deleteImage = async (imageUrl: string): Promise<void> => {
     try {
-      // Extract file path from URL
-      const urlParts = imageUrl.split('/');
-      const fileName = urlParts[urlParts.length - 1];
+      // If the image was originally in Supabase Storage, delete it from there
+      if (imageUrl.includes('supabase.co/storage')) {
+        const urlParts = imageUrl.split('/');
+        const fileName = urlParts[urlParts.length - 1];
 
-      const { error } = await supabase.storage
-        .from('menu-images')
-        .remove([fileName]);
-
-      if (error) {
-        throw error;
+        await supabase.storage
+          .from('menu-images')
+          .remove([fileName]);
       }
+      // Note: Cloudinary unsigned presets intentionally disallow direct client-side deletions for security
     } catch (error) {
       console.error('Error deleting image:', error);
-      throw error;
     }
   };
 
