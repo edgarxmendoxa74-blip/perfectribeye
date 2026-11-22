@@ -1,218 +1,187 @@
 import { MenuItem } from '../types';
 
+export interface DefaultCategory {
+  id: string;
+  name: string;
+  icon: string;
+  sort_order: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export const defaultCategories: DefaultCategory[] = [
+  { id: 'australian-beef', name: 'Australian Beef', icon: '🇦🇺', sort_order: 1, active: true, created_at: '', updated_at: '' },
+  { id: 'australian-striploin', name: 'Australian Marbled Striploin', icon: '🥩', sort_order: 2, active: true, created_at: '', updated_at: '' },
+  { id: 'australian-ribeye', name: 'Australian Ribeye', icon: '🇦🇺', sort_order: 3, active: true, created_at: '', updated_at: '' },
+  { id: 'japanese-wagyu', name: 'Japanese Wagyu', icon: '🇯🇵', sort_order: 4, active: true, created_at: '', updated_at: '' },
+  { id: 'usda-ribeye', name: 'USDA / USA Ribeye', icon: '🇺🇸', sort_order: 5, active: true, created_at: '', updated_at: '' },
+  { id: 'wagyu-cubes', name: 'Wagyu Cubes', icon: '🎲', sort_order: 6, active: true, created_at: '', updated_at: '' },
+];
+
+export const addOnCategories = ['Butter', 'Sauces', 'Sides', 'Extras'];
+
 export const menuData: MenuItem[] = [
-  // Dim Sum
+  // 1. Australian Beef
   {
-    id: 'har-gow',
-    name: 'Har Gow (Shrimp Dumplings)',
-    description: 'Delicate translucent dumplings filled with fresh shrimp and bamboo shoots',
-    basePrice: 180,
-    category: 'dim-sum',
+    id: 'aus-marbled-ribeye-beef',
+    name: 'AUS Marbled Ribeye',
+    description: 'Premium Australian marbled ribeye steak with excellent fat distribution. Rich, buttery flavor perfect for grilling. Sold per kilo.',
+    basePrice: 1450,
+    category: 'australian-beef',
     popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'siu-mai',
-    name: 'Siu Mai (Pork & Shrimp Dumplings)',
-    description: 'Traditional open-topped dumplings with pork, shrimp, and mushrooms',
-    basePrice: 160,
-    category: 'dim-sum',
-    popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'char-siu-bao',
-    name: 'Char Siu Bao (BBQ Pork Buns)',
-    description: 'Fluffy steamed buns filled with sweet and savory BBQ pork',
-    basePrice: 140,
-    category: 'dim-sum',
-    popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'xiao-long-bao',
-    name: 'Xiao Long Bao (Soup Dumplings)',
-    description: 'Delicate dumplings filled with pork and savory broth',
-    basePrice: 220,
-    category: 'dim-sum',
-    popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'cheung-fun',
-    name: 'Cheung Fun (Rice Noodle Rolls)',
-    description: 'Silky rice noodle rolls with choice of shrimp, beef, or char siu',
-    basePrice: 180,
-    category: 'dim-sum',
+    available: true,
+    image: '/s4.jpg',
     variations: [
-      { id: 'shrimp', name: 'Shrimp', price: 0 },
-      { id: 'beef', name: 'Beef', price: 20 },
-      { id: 'char-siu', name: 'Char Siu', price: 15 }
+      { id: 'var-1', name: '500g Cut', price: 0 },
+      { id: 'var-2', name: '1kg Cut', price: 0 }
     ],
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
+    addOns: [
+      { id: 'add-1', name: 'Truffle Butter', price: 120, category: 'Butter' },
+      { id: 'add-2', name: 'Red Wine Demi-Glace Sauce', price: 95, category: 'Sauces' }
+    ]
   },
+  // 2. Australian Marbled Striploin
   {
-    id: 'turnip-cake',
-    name: 'Lo Bak Go (Turnip Cake)',
-    description: 'Pan-fried radish cake with Chinese sausage and dried shrimp',
-    basePrice: 120,
-    category: 'dim-sum',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-
-  // Noodles
-  {
-    id: 'beef-chow-fun',
-    name: 'Beef Chow Fun',
-    description: 'Stir-fried wide rice noodles with tender beef and bean sprouts',
-    basePrice: 280,
-    category: 'noodles',
+    id: 'aus-marbled-striploin',
+    name: 'AUS Marbled Striploin',
+    description: 'Premium Australian marbled striploin cut. Tender and flavorful with beautiful marbling throughout. Sold per kilo.',
+    basePrice: 1450,
+    category: 'australian-striploin',
     popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
+    available: true,
+    image: '/s1.jpg'
   },
+  // 3. Australian Ribeye
   {
-    id: 'dan-dan-noodles',
-    name: 'Dan Dan Noodles',
-    description: 'Sichuan noodles with spicy sesame sauce and minced pork',
-    basePrice: 250,
-    category: 'noodles',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'wonton-noodle-soup',
-    name: 'Wonton Noodle Soup',
-    description: 'Fresh egg noodles in clear broth with pork and shrimp wontons',
-    basePrice: 220,
-    category: 'noodles',
+    id: 'aus-marbled-ribeye',
+    name: 'AUS Marbled Ribeye',
+    description: 'Premium Australian marbled ribeye with excellent marbling. Juicy and flavorful, perfect for any cooking method. Sold per kilo.',
+    basePrice: 1450,
+    category: 'australian-ribeye',
     popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'pad-thai',
-    name: 'Pad Thai',
-    description: 'Thai stir-fried rice noodles with shrimp, tofu, and peanuts',
-    basePrice: 260,
-    category: 'noodles',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'lo-mein',
-    name: 'Chicken Lo Mein',
-    description: 'Soft egg noodles tossed with chicken and vegetables',
-    basePrice: 240,
-    category: 'noodles',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-
-  // Rice Dishes
-  {
-    id: 'yang-chow-fried-rice',
-    name: 'Yang Chow Fried Rice',
-    description: 'Classic fried rice with shrimp, char siu, and eggs',
-    basePrice: 280,
-    category: 'rice-dishes',
-    popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'beef-broccoli-rice',
-    name: 'Beef and Broccoli Rice',
-    description: 'Tender beef with fresh broccoli in savory sauce over steamed rice',
-    basePrice: 320,
-    category: 'rice-dishes',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'sweet-sour-pork-rice',
-    name: 'Sweet and Sour Pork Rice',
-    description: 'Crispy pork with pineapple and bell peppers in tangy sauce',
-    basePrice: 300,
-    category: 'rice-dishes',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'mapo-tofu-rice',
-    name: 'Mapo Tofu Rice',
-    description: 'Silky tofu in spicy Sichuan sauce with ground pork over rice',
-    basePrice: 260,
-    category: 'rice-dishes',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'kung-pao-chicken-rice',
-    name: 'Kung Pao Chicken Rice',
-    description: 'Diced chicken with peanuts and chili peppers in savory sauce',
-    basePrice: 290,
-    category: 'rice-dishes',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-
-  // Beverages
-  {
-    id: 'jasmine-tea',
-    name: 'Jasmine Tea',
-    description: 'Fragrant jasmine tea served hot in traditional pot',
-    basePrice: 80,
-    category: 'beverages',
-    popular: true,
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'oolong-tea',
-    name: 'Oolong Tea',
-    description: 'Premium oolong tea with complex floral notes',
-    basePrice: 100,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'chrysanthemum-tea',
-    name: 'Chrysanthemum Tea',
-    description: 'Cooling herbal tea with dried chrysanthemum flowers',
-    basePrice: 90,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'lychee-juice',
-    name: 'Fresh Lychee Juice',
-    description: 'Sweet and refreshing lychee juice served chilled',
-    basePrice: 120,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'winter-melon-tea',
-    name: 'Winter Melon Tea',
-    description: 'Traditional Chinese tea with subtle sweet flavor',
-    basePrice: 85,
-    category: 'beverages',
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
-  },
-  {
-    id: 'hot-soy-milk',
-    name: 'Hot Soy Milk',
-    description: 'Fresh soy milk served hot with optional sugar',
-    basePrice: 70,
-    category: 'beverages',
+    available: true,
+    image: '/s4.jpg',
     variations: [
-      { id: 'plain', name: 'Plain', price: 0 },
-      { id: 'sweet', name: 'Sweetened', price: 10 }
+      { id: 'var-3', name: '500g Cut', price: 0 },
+      { id: 'var-4', name: '1kg Cut', price: 0 }
     ],
-    image: 'https://images.pexels.com/photos/4518843/pexels-photo-4518843.jpeg?auto=compress&cs=tinysrgb&w=800'
+    addOns: [
+      { id: 'add-3', name: 'Truffle Butter', price: 120, category: 'Butter' },
+      { id: 'add-4', name: 'Red Wine Demi-Glace Sauce', price: 95, category: 'Sauces' }
+    ]
   },
-];
-
-export const categories = [
-  { id: 'dim-sum', name: 'Dim Sum', icon: '🥟' },
-  { id: 'noodles', name: 'Noodles', icon: '🍜' },
-  { id: 'rice-dishes', name: 'Rice Dishes', icon: '🍚' },
-  { id: 'beverages', name: 'Beverages', icon: '🍵' }
-];
-
-export const addOnCategories = [
-  { id: 'spice', name: 'Spice Level' },
-  { id: 'protein', name: 'Extra Protein' },
-  { id: 'sauce', name: 'Sauces' },
-  { id: 'extras', name: 'Extras' }
+  {
+    id: 'aus-giant-marbled-ribeye',
+    name: 'AUS Giant Marbled Ribeye',
+    description: 'Extra-large Australian marbled ribeye cut. Perfect for sharing or special occasions. Premium quality with exceptional marbling. Sold per kilo.',
+    basePrice: 1450,
+    category: 'australian-ribeye',
+    popular: true,
+    available: true,
+    image: '/s6.jpg'
+  },
+  {
+    id: 'aus-artisan-ribeye',
+    name: 'AUS Artisan Ribeye',
+    description: 'Artisan-grade Australian ribeye, hand-selected for superior quality. Exceptional tenderness and rich beef flavor. Sold per kilo.',
+    basePrice: 1650,
+    category: 'australian-ribeye',
+    popular: false,
+    available: true,
+    image: '/s2.jpg'
+  },
+  {
+    id: 'premium-australian-ribeye',
+    name: 'Premium Australian Ribeye',
+    description: 'Top-tier Australian ribeye with wagyu-level marbling. The ultimate steak experience with melt-in-your-mouth texture. Sold per kilo.',
+    basePrice: 1999,
+    category: 'australian-ribeye',
+    popular: true,
+    available: true,
+    image: '/s8.jpg'
+  },
+  // 4. Japanese Wagyu
+  {
+    id: 'japanese-wagyu-cubes',
+    name: 'Japanese Wagyu Cubes',
+    description: 'Authentic Japanese Wagyu beef cubes. Incredibly marbled with signature buttery texture. Perfect for sukiyaki, yakiniku, or pan-searing. Sold per kilo.',
+    basePrice: 1250,
+    category: 'japanese-wagyu',
+    popular: true,
+    available: true,
+    image: '/s3.jpg'
+  },
+  // 5. USDA Ribeye
+  {
+    id: 'all-grilled-ribeye',
+    name: 'All Grilled Ribeye',
+    description: 'Classic USDA grilled ribeye, perfect char and seasoning. A steakhouse favorite at home. Sold per kilo.',
+    basePrice: 1399,
+    category: 'usda-ribeye',
+    popular: false,
+    available: true,
+    image: '/s5.jpg'
+  },
+  {
+    id: 'usda-ribeye-hq',
+    name: 'USDA Ribeye (High Quality)',
+    description: 'High quality USDA ribeye with excellent fat content. Rich, beefy flavor with perfect marbling. Sold per kilo.',
+    basePrice: 1399,
+    category: 'usda-ribeye',
+    popular: true,
+    available: true,
+    image: '/s7.jpg'
+  },
+  {
+    id: 'usda-tender-ribeye',
+    name: 'USDA Tender Ribeye',
+    description: 'USDA certified tender ribeye, known for its exceptional tenderness and juicy flavor. A customer favorite. Sold per kilo.',
+    basePrice: 1399,
+    category: 'usda-ribeye',
+    popular: true,
+    available: true,
+    image: '/s7.jpg'
+  },
+  {
+    id: 'usa-ribeye-mighty',
+    name: 'USA Ribeye (Mighty Cuts)',
+    description: 'Premium USA ribeye with mighty large portions. Thick cuts with impressive marbling and bold American beef flavor. Sold per kilo.',
+    basePrice: 1450,
+    category: 'usda-ribeye',
+    popular: false,
+    available: true,
+    image: '/s6.jpg'
+  },
+  {
+    id: 'usa-ribeye-artisan',
+    name: 'USA Ribeye',
+    description: 'Premium USA ribeye with artisan-level quality. Hand-selected for optimal flavor and tenderness. Sold per kilo.',
+    basePrice: 1650,
+    category: 'usda-ribeye',
+    popular: false,
+    available: true,
+    image: '/s2.jpg'
+  },
+  {
+    id: 'usa-ribeye-wagyu',
+    name: 'USA Ribeye (Wagyu Cuts)',
+    description: 'Premium USA ribeye featuring wagyu-style cuts. Exceptional marbling rivaling true wagyu beef. Sold per kilo.',
+    basePrice: 1999,
+    category: 'usda-ribeye',
+    popular: true,
+    available: true,
+    image: '/s8.jpg'
+  },
+  // 6. Wagyu Cubes
+  {
+    id: 'wagyu-cubes-category',
+    name: 'Japanese Wagyu Cubes',
+    description: 'Premium Japanese Wagyu beef cut into perfect cubes. Ideal for hot pot, stir-fry, or teppanyaki. Exceptional marbling and melt-in-your-mouth texture. Sold per kilo.',
+    basePrice: 1250,
+    category: 'wagyu-cubes',
+    popular: true,
+    available: true,
+    image: '/s3.jpg'
+  }
 ];

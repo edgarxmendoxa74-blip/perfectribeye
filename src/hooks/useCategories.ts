@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { defaultCategories } from '../data/menuData';
 
 export interface Category {
   id: string;
@@ -28,11 +29,16 @@ export const useCategories = () => {
 
       if (fetchError) throw fetchError;
 
-      setCategories(data || []);
+      if (!data || data.length === 0) {
+        setCategories(defaultCategories);
+      } else {
+        setCategories(data);
+      }
       setError(null);
     } catch (err) {
-      console.error('Error fetching categories:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch categories');
+      console.warn('Falling back to default categories:', err);
+      setCategories(defaultCategories);
+      setError(null);
     } finally {
       setLoading(false);
     }
