@@ -3,12 +3,24 @@ import { supabase } from '../lib/supabase';
 import { MenuItem } from '../types';
 import { menuData } from '../data/menuData';
 
+// Module-level cache — survives re-renders, cleared on page reload only
+let menuCache: MenuItem[] | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 export const useMenu = () => {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(menuCache ?? []);
+  const [loading, setLoading] = useState(menuCache === null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = async (force = false) => {
+    // Return cached data if still fresh and not forced
+    if (!force && menuCache && Date.now() - cacheTimestamp < CACHE_TTL_MS) {
+      setMenuItems(menuCache);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -69,6 +81,8 @@ export const useMenu = () => {
       if (formattedItems.length === 0) {
         setMenuItems(menuData);
       } else {
+        menuCache = formattedItems;
+        cacheTimestamp = Date.now();
         setMenuItems(formattedItems);
       }
       setError(null);
@@ -83,6 +97,7 @@ export const useMenu = () => {
 
   const addMenuItem = async (item: Omit<MenuItem, 'id'>) => {
     try {
+      menuCache = null; // bust cache on write
       // Insert menu item
       const { data: menuItem, error: itemError } = await supabase
         .from('menu_items')
@@ -145,6 +160,7 @@ export const useMenu = () => {
 
   const updateMenuItem = async (id: string, updates: Partial<MenuItem>) => {
     try {
+      menuCache = null; // bust cache on write
       // Update menu item
       const { error: itemError } = await supabase
         .from('menu_items')
@@ -209,6 +225,7 @@ export const useMenu = () => {
 
   const deleteMenuItem = async (id: string) => {
     try {
+      menuCache = null; // bust cache on write
       const { error } = await supabase
         .from('menu_items')
         .delete()
